@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>งานและกำลัง – Roblox: Power Inc.</title>
+<style>
+:root{--bg:#0b0d2b;--panel:#171a4a;--line:#05061a;--cy:#19f0ff;--mg:#ff3df2;--or:#ff9a1f;--lime:#9dff3a;--tx:#f2f4ff}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%;background:var(--bg);color:var(--tx);font-family:"Trebuchet MS","Leelawadee UI","Noto Sans Thai",Tahoma,sans-serif;font-weight:700}
+body{background:radial-gradient(circle at 20% 0,#2a1b6e 0,transparent 45%),radial-gradient(circle at 90% 100%,#07556b 0,transparent 40%),var(--bg);padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+#app{max-width:980px;margin:0 auto;padding:10px;position:relative}
+#top{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+#top h1{font-size:clamp(16px,3.4vw,26px);margin:0;flex:1;color:var(--or);text-shadow:2px 2px 0 var(--line),0 0 12px var(--or)}
+.pill{background:var(--panel);border:3px solid var(--line);border-radius:8px;padding:5px 10px;box-shadow:0 3px 0 var(--line)}
+.screen{display:none}.screen.on{display:block}
+.box{background:var(--panel);border:3px solid var(--line);border-radius:10px;padding:12px;box-shadow:0 5px 0 var(--line),0 0 0 2px #2c3190 inset;margin-bottom:12px}
+h2{margin:0 0 8px;font-size:18px;color:var(--cy)}
+button{font:inherit;color:#fff;background:#2f7bff;border:3px solid var(--line);border-radius:8px;padding:9px 14px;cursor:pointer;box-shadow:0 4px 0 var(--line);touch-action:manipulation}
+button:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
+button:focus-visible,input:focus-visible{outline:3px solid var(--lime);outline-offset:2px}
+button.or{background:var(--or);color:#2a1300}button.gr{background:#22b455}button.mg{background:#c42bd1}button.off{opacity:.45;pointer-events:none}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.grid2{display:grid;grid-template-columns:200px 1fr;gap:12px}
+@media(max-width:640px){.grid2{grid-template-columns:1fr}}
+.sw{width:30px;height:30px;padding:0;border-radius:6px}.sw.sel{outline:3px solid #fff}
+.job{flex:1;min-width:200px;text-align:left}.job small{display:block;font-weight:400;opacity:.85}.job.sel{outline:4px solid var(--lime)}
+.chip{min-width:46px}
+canvas{width:100%;height:auto;display:block;border:3px solid var(--line);border-radius:10px;background:#111}
+#hud{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:8px}
+@media(max-width:640px){#hud{grid-template-columns:repeat(2,1fr)}}
+.hv{font-size:12px;opacity:.85}.hn{font-size:18px}
+#ebar{height:14px;background:#05061a;border-radius:7px;overflow:hidden;margin-top:3px}
+#efill{height:100%;width:0;background:linear-gradient(90deg,var(--lime),#ffe23a);transition:background .15s}
+#efill.hot{background:#ff3b3b;animation:bl .25s infinite alternate}@keyframes bl{to{opacity:.5}}
+#ctrl{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+#fs{flex:1;min-width:160px;height:34px;accent-color:var(--or)}
+#push{min-width:120px;font-size:20px;padding:14px 22px}
+#mission{font-size:14px;margin:6px 0}
+#wipe{position:fixed;inset:0;background:repeating-linear-gradient(45deg,var(--or) 0 24px,#111 24px 48px);transform:translateX(-101%);transition:transform .35s ease;z-index:50;pointer-events:none}
+#wipe.in{transform:none}
+#modal{position:fixed;inset:0;background:#000a;display:none;align-items:center;justify-content:center;z-index:40;padding:12px}
+#modal.on{display:flex}#mb{max-width:520px;width:100%;max-height:92vh;overflow:auto}
+.opt{display:block;width:100%;margin:6px 0;text-align:left}.opt.ok{background:#22b455}.opt.no{background:#d33}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px}
+.item{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:2px dashed #2c3190}
+.bdg{display:flex;gap:8px;padding:6px 0;opacity:.4}.bdg.on{opacity:1}
+table{width:100%;border-collapse:collapse;font-size:14px}td,th{padding:4px;text-align:left;border-bottom:1px solid #2c3190}
+#toast{position:fixed;top:14px;left:50%;transform:translateX(-50%);background:var(--lime);color:#112;padding:10px 16px;border-radius:8px;border:3px solid var(--line);z-index:60;display:none}
+@media(prefers-reduced-motion:reduce){#wipe{transition:none}#efill.hot{animation:none}}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="top">
+    <h1>⚙️ Power Inc. – งานและกำลัง</h1>
+    <div class="pill">🪙 <span id="coins">0</span></div>
+    <button id="mute" aria-label="เปิด/ปิดเสียง">🔊</button>
+  </div>
+
+  <!-- ฉาก 1: ล็อบบี้ + เลือกสายงาน + แต่งตัวละคร -->
+  <section id="s1" class="screen on">
+    <div class="box grid2">
+      <div><h2>ล็อกเกอร์ของฉัน</h2>
+        <canvas id="av" width="200" height="230" style="background:#0e1140"></canvas></div>
+      <div>
+        <h2>ปรับแต่งวิศวกร</h2>
+        <div class="row">ชุด: <span id="sw1" class="row"></span></div>
+        <div class="row" style="margin-top:6px">หมวก: <span id="sw2" class="row"></span><span id="hats" class="row"></span></div>
+        <h2 style="margin-top:14px">เลือกสายงานวันนี้</h2>
+        <div class="row">
+          <button class="job or" data-job="work">💪 สายจอมพลัง (Work Master)<small>ลาก/ยกของหนัก คำนวณงาน W = F × s</small></button>
+          <button class="job mg" data-job="power">⚡ สายสปีดดี้ (Power Racer)<small>ส่งของให้ทันเวลา คำนวณกำลัง P = W ÷ t</small></button>
+        </div>
+      </div>
+    </div>
+    <div class="box"><h2 id="lvh">เลือกด่าน</h2><div id="lvs" class="row"></div></div>
+    <button class="gr" id="toShop">🛒 ร้านค้า &amp; แดชบอร์ด</button>
+  </section>
+
+  <!-- ฉาก 2: โรงงาน -->
+  <section id="s2" class="screen">
+    <div id="hud">
+      <div class="pill"><div class="hv">⚡ แรง F (N)</div><div class="hn" id="hF">0</div><div id="ebar"><div id="efill"></div></div></div>
+      <div class="pill"><div class="hv">📏 ระยะ s (m)</div><div class="hn" id="hS">0</div></div>
+      <div class="pill"><div class="hv">⏱ เวลาที่เหลือ t (s)</div><div class="hn" id="hT">0</div></div>
+      <div class="pill"><div class="hv">🔧 งาน W / กำลัง P</div><div class="hn" id="hW">0</div></div>
+    </div>
+    <canvas id="cv" width="800" height="420"></canvas>
+    <div id="mission"></div>
+    <div id="ctrl">
+      <input id="fs" type="range" min="0" max="300" step="5" value="50" aria-label="แรง F">
+      <button id="push" class="or">ผลัก!</button>
+      <button id="quit">⬅ ออก</button>
+    </div>
+  </section>
+
+  <!-- ฉาก 3: ร้านค้า + แดชบอร์ด -->
+  <section id="s3" class="screen">
+    <div class="box"><h2>📊 แดชบอร์ดผู้เล่น</h2><div class="stats" id="stats"></div></div>
+    <div class="box"><h2>🛒 Robux Energy Shop</h2><div id="shop"></div></div>
+    <div class="box"><h2>🏆 Badge</h2><div id="badges"></div></div>
+    <div class="box"><h2>🕹 Arcade – คะแนนสูงสุดแต่ละด่าน</h2><table id="board"></table></div>
+    <button id="back">⬅ กลับล็อบบี้</button>
+  </section>
+
+  <div id="wipe"></div>
+  <div id="modal"><div id="mb" class="box"></div></div>
+  <div id="toast"></div>
+</div>
+
+<script>
+/* ============ ข้อมูลเกม (แก้ไขได้ที่นี่) ============ */
+const G = 10;      // ความเร่งโน้มถ่วง (m/s²)
+const K = 0.04;    // ค่าความเร็วต่อแรงสุทธิ 1 N (ปรับให้เกมเร็ว/ช้า)
+/* LEVELS: m=มวล(kg) s=ระยะ(m) t=เวลา(s) mode=push|lift
+   zones=[[เริ่ม,จบ,μ]] ; แรงเสียดทาน f = μ·m·g ; โหมด lift ใช้ μ=1 (f = น้ำหนัก mg) */
+const LEVELS = [
+ {id:'w1',job:'work', name:'กล่องแรกของวิศวกร', m:10,s:8, t:40,mode:'push',zones:[[0,8,.3]],hint:'ออกแรงมากกว่าแรงเสียดทาน แล้วกดผลัก!'},
+ {id:'w2',job:'work', name:'พื้นน้ำมันลื่น',     m:20,s:12,t:50,mode:'push',zones:[[0,4,.4],[4,8,.1],[8,12,.4]],hint:'พื้นน้ำมัน (สีม่วง) แรงเสียดทานน้อยลง'},
+ {id:'w3',job:'work', name:'ยกพัสดุขึ้นชั้นบน', m:15,s:6, t:40,mode:'lift',zones:[[0,6,1]],hint:'แรงยกต้องมากกว่าน้ำหนัก (mg)'},
+ {id:'w4',job:'work', name:'กล่องยักษ์สองพื้น', m:40,s:15,t:60,mode:'push',zones:[[0,7,.3],[7,15,.15]],hint:'กล่องหนัก แรงเสียดทานสูง'},
+ {id:'p1',job:'power',name:'ส่งด่วน 12 วินาที', m:10,s:10,t:12,mode:'push',zones:[[0,10,.3]],hint:'แรงเท่ากัน ทำงานเร็วกว่า = กำลังมากกว่า'},
+ {id:'p2',job:'power',name:'แข่งกับหุ่นยนต์',   m:20,s:16,t:14,mode:'push',zones:[[0,16,.25]],hint:'ชนะหุ่นยนต์ที่ใช้เวลา 14 วินาที'},
+ {id:'p3',job:'power',name:'ลื่นแต่ต้องเร็ว',   m:30,s:20,t:16,mode:'push',zones:[[0,8,.3],[8,20,.1]],hint:'ปรับแรงตามพื้นผิวให้ทัน'},
+ {id:'p4',job:'power',name:'เครนยกด่วน',        m:20,s:8, t:10,mode:'lift',zones:[[0,8,1]],hint:'ต้องออกแรงมากกว่า 200 N'}
+];
+/* SHOP: ของอัปเกรด (effect ทำงานในฟังก์ชัน update) */
+const SHOP = [
+ {id:'gloves',icon:'🧤',name:'ถุงมือเพิ่มแรงผลัก',desc:'แรงที่ส่งถึงกล่อง +10%',price:60},
+ {id:'jet',   icon:'🚀',name:'กระเป๋าเป้ไอพ่น',  desc:'เคลื่อนที่เร็วขึ้น 30%',price:120},
+ {id:'cart',  icon:'💎',name:'รถเข็นล้อเพชร',     desc:'แรงเสียดทานลด 20% (ด่านผลัก)',price:150},
+ {id:'crown', icon:'👑',name:'มงกุฎทอง',          desc:'หมวกแต่งตัว',price:80},
+ {id:'prop',  icon:'🚁',name:'หมวกใบพัด',         desc:'หมวกแต่งตัว',price:80}
+];
+/* BADGES: เงื่อนไขตรวจใน checkBadges() */
+const BADGES = [
+ {id:'first',name:'Newbie Worker',desc:'ผ่านด่านแรก'},
+ {id:'god',name:'The Physics God',desc:'ตอบคำนวณถูก 5 ข้อติด'},
+ {id:'lift',name:'Heavy Lifter',desc:'สร้างงานสะสมครบ 10,000 จูล'},
+ {id:'rich',name:'Power Tycoon',desc:'สะสม 200 เหรียญ'}
+];
+const BODY_COLORS=['#2f7bff','#e53935','#22b455','#a23cff','#ff5fa2','#f2f2f2'];
+const HAT_COLORS=['#ff8a00','#ffd400','#19f0ff','#ff3df2','#9dff3a','#ffffff'];
+
+/* ============ สถานะ + บันทึก ============ */
+const $=s=>document.querySelector(s);
+const SAVE='powerinc_v1';
+let S={coins:0,work:0,right:0,total:0,streak:0,cleared:{work:0,power:0},best:{},own:{},hat:'hard',body:BODY_COLORS[0],hatC:HAT_COLORS[0],badges:{}};
+try{Object.assign(S,JSON.parse(localStorage.getItem(SAVE)||'{}'))}catch(e){}
+function save(){try{localStorage.setItem(SAVE,JSON.stringify(S))}catch(e){}$('#coins').textContent=S.coins}
+let job='work',cur=1,run=null,AT=0;
+
+/* ============ เสียง (WebAudio – chiptune 8-bit) ============ */
+let AC,muted=false,bgm=null;
+function ac(){if(!AC){try{AC=new(window.AudioContext||window.webkitAudioContext)()}catch(e){}}if(AC&&AC.state==='suspended')AC.resume();return AC}
+function tone(f,d,type='square',v=.05,f2){const a=ac();if(!a||muted)return;const o=a.createOscillator(),g=a.createGain(),n=a.currentTime;
+  o.type=type;o.frequency.setValueAtTime(f,n);if(f2)o.frequency.exponentialRampToValueAtTime(f2,n+d);
+  g.gain.setValueAtTime(v,n);g.gain.exponentialRampToValueAtTime(.0001,n+d);o.connect(g);g.connect(a.destination);o.start();o.stop(n+d)}
+const sfx={
+ oof:()=>tone(300,.28,'square',.09,80),            // "Oof!"
+ vroom:()=>tone(90,.2,'sawtooth',.04,170),         // "Vroom!"
+ beep:()=>{tone(880,.09,'square',.06);setTimeout(()=>tone(880,.09,'square',.06),150)}, // "Beep Beep!"
+ coin:()=>{tone(988,.08);setTimeout(()=>tone(1319,.18),90)},
+ boom:()=>tone(220,.5,'sawtooth',.1,40)};
+const MEL=[523,0,659,0,784,659,0,523,587,0,740,0,880,740,0,587]; // ทำนองเพลงประกอบ (แก้ได้)
+function startBGM(){if(bgm||!ac())return;let i=0;bgm=setInterval(()=>{const n=MEL[i%MEL.length];if(n)tone(n,.14,'square',.02);if(i%4==0)tone(130,.3,'triangle',.05);i++},190)}
+$('#mute').onclick=()=>{muted=!muted;$('#mute').textContent=muted?'🔇':'🔊';startBGM()};
+document.addEventListener('pointerdown',startBGM,{once:true});
+
+/* ============ ตัวละครบล็อกสไตล์ Roblox ============ */
+function rect(c,x,y,w,h,col){c.fillStyle=col;c.fillRect(x,y,w,h);c.strokeStyle='#05061a';c.lineWidth=2;c.strokeRect(x,y,w,h)}
+/* x,y = กึ่งกลางเท้า, k = ขนาด, pose = idle|push|scratch|lift */
+function drawChar(c,x,y,k,pose,t,jetOn){
+  c.save();c.translate(x,y);c.scale(k,k);const skin='#ffd9a0',w=Math.sin(t*14)*2;
+  if(S.own.jet){rect(c,-26,-56,12,28,'#9aa3c7');if(jetOn){c.fillStyle='#ff9a1f';c.beginPath();c.moveTo(-24,-28);c.lineTo(-20,-14-Math.random()*8);c.lineTo(-16,-28);c.fill()}}
+  rect(c,-12,-24,11,24,'#2b2f5a');rect(c,1,-24,11,24,'#2b2f5a');
+  rect(c,-14,-54,28,30,S.body);
+  if(pose==='push'){rect(c,14,-50+w,22,9,skin);rect(c,32,-52+w,9,13,'#ff9a1f')}
+  else if(pose==='scratch'){rect(c,12,-76+w,9,26,skin);rect(c,10,-82+w,13,9,'#ff9a1f')}
+  else if(pose==='lift'){rect(c,12,-84,9,32,skin);rect(c,10,-90,13,9,'#ff9a1f')}
+  else rect(c,14,-52,9,24,skin);
+  rect(c,-23,-52,9,24,skin);
+  rect(c,-12,-80,24,26,skin);c.fillStyle='#111';c.fillRect(-6,-70,4,5);c.fillRect(3,-70,4,5);c.fillRect(-4,-61,8,2);
+  const h=S.hat,hc=S.hatC;
+  if(h==='crown'){c.fillStyle='#ffd400';c.beginPath();c.moveTo(-13,-80);c.lineTo(-13,-96);c.lineTo(-6,-88);c.lineTo(0,-98);c.lineTo(6,-88);c.lineTo(13,-96);c.lineTo(13,-80);c.fill();c.stroke()}
+  else{rect(c,-14,-92,28,13,hc);rect(c,-17,-82,34,5,hc);if(h==='prop'){c.strokeStyle='#fff';c.lineWidth=3;c.beginPath();c.moveTo(-18*Math.cos(t*20),-96);c.lineTo(18*Math.cos(t*20),-96);c.stroke()}}
+  c.restore()}
+
+/* ============ การเปลี่ยนฉาก ============ */
+function go(n,after){const wp=$('#wipe');wp.classList.add('in');setTimeout(()=>{
+  document.querySelectorAll('.screen').forEach((e,i)=>e.classList.toggle('on',i+1===n));cur=n;
+  if(n===1)renderLobby();if(n===3)renderShop();if(after)after();
+  setTimeout(()=>wp.classList.remove('in'),60)},360)}
+
+/* ============ ฉาก 1: ล็อบบี้ ============ */
+function swatches(id,arr,key){$(id).innerHTML=arr.map(c=>`<button class="sw ${S[key]===c?'sel':''}" style="background:${c}" data-k="${key}" data-c="${c}" aria-label="สี ${c}"></button>`).join('')}
+function renderLobby(){
+  swatches('#sw1',BODY_COLORS,'body');swatches('#sw2',HAT_COLORS,'hatC');
+  const hats=[['hard','⛑ หมวกช่าง'],...(S.own.crown?[['crown','👑']]:[]),...(S.own.prop?[['prop','🚁']]:[])];
+  $('#hats').innerHTML=hats.map(h=>`<button class="${S.hat===h[0]?'or':''}" data-hat="${h[0]}">${h[1]}</button>`).join('');
+  document.querySelectorAll('.job').forEach(b=>b.classList.toggle('sel',b.dataset.job===job));
+  $('#lvh').textContent=job==='work'?'ด่านสายจอมพลัง (งาน W)':'ด่านสายสปีดดี้ (กำลัง P)';
+  const list=LEVELS.filter(l=>l.job===job);
+  $('#lvs').innerHTML=list.map((l,i)=>`<button class="chip ${i>S.cleared[job]?'off':i===S.cleared[job]?'or':'gr'}" data-lv="${l.id}">${i+1}. ${l.name}${i<S.cleared[job]?' ✅':''}</button>`).join('');
+  save();drawAvatar()}
+function drawAvatar(){const c=$('#av').getContext('2d');c.clearRect(0,0,200,230);
+  c.fillStyle='#19f0ff22';for(let i=0;i<5;i++)c.fillRect(0,170+i*14,200,2);
+  drawChar(c,100,195,1.7,'idle',AT)}
+$('#s1').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+  if(b.dataset.k){S[b.dataset.k]=b.dataset.c;renderLobby()}
+  else if(b.dataset.hat){S.hat=b.dataset.hat;renderLobby()}
+  else if(b.dataset.job){job=b.dataset.job;renderLobby()}
+  else if(b.dataset.lv)startLevel(LEVELS.find(l=>l.id===b.dataset.lv))});
+$('#toShop').onclick=()=>go(3);$('#back').onclick=()=>go(1);
+
+/* ============ ฉาก 2: โรงงาน (ฟิสิกส์) ============ */
+const PXW=540,X0=150,FLOOR=330;
+function startLevel(lv){
+  run={lv,x:0,t:0,Fint:0,push:false,started:false,state:'play',v:0,scratch:false,over:false,vt:0,bt:0,parts:[],shake:0};
+  $('#mission').innerHTML=`🎯 <b>${lv.name}</b> – กล่องมวล ${lv.m} kg ไปให้ถึง ${lv.s} m ภายใน ${lv.t} วินาที<br>💡 ${lv.hint}`;
+  go(2)}
+function zoneMu(lv,x){for(const z of lv.zones)if(x>=z[0]&&x<z[1])return z[2];return lv.zones[lv.zones.length-1][2]}
+function fric(){const lv=run.lv;return zoneMu(lv,run.x)*lv.m*G*(lv.mode==='push'&&S.own.cart?.8:1)}
+const press=v=>{if(!run||run.state!=='play')return;run.push=v;if(v){run.started=true;ac()}};
+const pb=$('#push');pb.onpointerdown=e=>{e.preventDefault();press(true)};['pointerup','pointerleave','pointercancel'].forEach(ev=>pb['on'+ev]=()=>press(false));
+document.addEventListener('keydown',e=>{if(cur!==2)return;if(e.code==='Space'){e.preventDefault();if(!e.repeat)press(true)}
+  const fs=$('#fs');if(e.key==='ArrowRight')fs.value=Math.min(300,+fs.value+5);if(e.key==='ArrowLeft')fs.value=Math.max(0,+fs.value-5)});
+document.addEventListener('keyup',e=>{if(e.code==='Space')press(false)});
+$('#quit').onclick=()=>{run=null;go(1)};
+
+function update(dt){
+  const r=run,lv=r.lv;if(r.state!=='play')return;
+  const F=+$('#fs').value,f=fric();r.v=0;r.scratch=false;r.vt-=dt;r.bt-=dt;
+  if(r.push){const Fe=F*(S.own.gloves?1.1:1);
+    if(Fe>f){r.v=(Fe-f)*K*(S.own.jet?1.3:1);r.x=Math.min(lv.s,r.x+r.v*dt);r.Fint+=F*r.v*dt;if(r.vt<=0){sfx.vroom();r.vt=.25}}
+    else{r.scratch=true;if(r.vt<=0){sfx.oof();r.vt=.9}}   // แรงน้อย กล่องไม่ขยับ ตัวละครเกาหัว
+    if(F>250){r.over=true;if(r.bt<=0){sfx.beep();r.bt=.7}}}
+  if(r.started)r.t+=dt;
+  if(r.x>=lv.s){r.state='win';burst(r,40);setTimeout(()=>finish(true),900)}
+  else if(r.t>=lv.t){r.state='fail';burst(r,90);r.shake=.6;sfx.boom();setTimeout(()=>finish(false),1100)} // กล่องระเบิดเป็นพลุกระดาษ
+  r.parts.forEach(p=>{p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=500*dt;p.a+=dt*8});r.parts=r.parts.filter(p=>p.y<500);r.shake=Math.max(0,r.shake-dt)}
+function burst(r,n){const lv=r.lv,b=boxPos(r);for(let i=0;i<n;i++)r.parts.push({x:b.x+32,y:b.y+32,vx:(Math.random()-.5)*500,vy:-Math.random()*450,a:0,c:['#ff3df2','#19f0ff','#ffd400','#9dff3a','#ff9a1f'][i%5]})}
+function boxPos(r){const lv=r.lv;return lv.mode==='lift'?{x:X0+250,y:FLOOR-64-r.x/lv.s*250}:{x:X0+r.x/lv.s*PXW,y:FLOOR-64}}
+
+/* ----- วาด ----- */
+const cv=$('#cv'),cx=cv.getContext('2d');
+function draw(){
+  const r=run,lv=r.lv,c=cx;c.save();if(r.shake>0)c.translate((Math.random()-.5)*10,(Math.random()-.5)*10);
+  const g=c.createLinearGradient(0,0,0,420);g.addColorStop(0,'#14083a');g.addColorStop(1,'#0a3a55');c.fillStyle=g;c.fillRect(0,0,800,420);
+  c.strokeStyle='#19f0ff22';c.lineWidth=1;for(let i=0;i<800;i+=40){c.beginPath();c.moveTo(i,0);c.lineTo(i,420);c.stroke()}
+  for(let i=0;i<3;i++){c.save();c.translate(120+i*280,70);c.rotate(AT*(i%2?-1:1)*.6);c.fillStyle='#ff3df233';for(let k=0;k<8;k++){c.rotate(Math.PI/4);c.fillRect(-6,-34,12,16)}c.beginPath();c.arc(0,0,22,0,7);c.fill();c.restore()}
+  c.fillStyle='#ff9a1f';c.font='bold 16px sans-serif';c.fillText('POWER INC. ★ Overtime Factory',20,28);
+  // สายพาน/พื้น + โซนแรงเสียดทาน
+  c.fillStyle='#262a5c';c.fillRect(0,FLOOR,800,60);
+  c.fillStyle='#3a3f85';for(let i=-1;i<20;i++)c.fillRect((i*44+(r.x*20))%880,FLOOR+44,22,6);
+  if(lv.mode==='push'){lv.zones.forEach(z=>{const a=X0+z[0]/lv.s*PXW,b=X0+z[1]/lv.s*PXW,oil=z[2]<=.15;
+    c.fillStyle=oil?'#8a22b8':'#4b5196';c.fillRect(a,FLOOR,b-a,14);
+    if(oil){c.fillStyle='#ff3df2aa';for(let k=a+8;k<b-10;k+=26)c.fillRect(k,FLOOR+3,12,3)}
+    c.fillStyle='#fff';c.font='12px sans-serif';c.fillText((oil?'🛢 ':'')+'μ='+z[2],a+6,FLOOR+30)});
+    c.fillStyle='#9dff3a';c.fillRect(X0+PXW+66,FLOOR-90,6,90);c.font='13px sans-serif';c.fillText('FINISH '+lv.s+' m',X0+PXW-4,FLOOR-96);
+    if(lv.job==='power'){ // หุ่นยนต์คู่แข่ง: ใช้เวลาเท่ากับเวลาจำกัด
+      const rx=X0+Math.min(1,r.t/lv.t)*PXW;c.fillStyle='#ff3b3b';c.fillRect(rx,FLOOR-170,34,26);c.fillStyle='#fff';c.fillRect(rx+6,FLOOR-162,6,6);c.fillRect(rx+20,FLOOR-162,6,6);c.fillText('🤖 เครื่องจักร',rx-8,FLOOR-176)}
+  }else{ // ยกขึ้นด้วยเครน
+    const top=FLOOR-250-64,bp=boxPos(r);c.fillStyle='#ff9a1f';c.fillRect(X0+200,top-18,260,10);c.strokeStyle='#ddd';c.lineWidth=3;c.beginPath();c.moveTo(bp.x+32,top-8);c.lineTo(bp.x+32,bp.y);c.stroke();
+    c.fillStyle='#9dff3a';c.fillRect(X0+400,FLOOR-250,120,8);c.fillStyle='#fff';c.font='13px sans-serif';c.fillText('ชั้นบน สูง '+lv.s+' m',X0+400,FLOOR-258)}
+  // กล่อง
+  const b=boxPos(r);if(r.state!=='fail'){rect(c,b.x,b.y,64,64,'#c98a45');c.fillStyle='#e6b273';c.fillRect(b.x+27,b.y+2,10,60);
+    c.fillStyle='#111';c.fillRect(b.x+14,b.y+24,6,6);c.fillRect(b.x+44,b.y+24,6,6);c.fillRect(b.x+24,b.y+40,16,3);
+    c.fillStyle='#fff';c.font='bold 12px sans-serif';c.fillText(lv.m+' kg',b.x+16,b.y+14)}
+  // ตัวละคร
+  const pose=lv.mode==='lift'?(r.push?'lift':'idle'):r.scratch?'scratch':r.push?'push':'idle';
+  const px=lv.mode==='lift'?b.x-36:b.x-50;drawChar(c,px,FLOOR,1.1,pose,AT,r.push&&r.v>0);
+  if(r.scratch){c.fillStyle='#fff';c.font='bold 18px sans-serif';c.fillText('Oof? ขยับไม่ไป…',px-20,FLOOR-125)}
+  r.parts.forEach(p=>{c.save();c.translate(p.x,p.y);c.rotate(p.a);c.fillStyle=p.c;c.fillRect(-4,-2,8,4);c.restore()});
+  c.restore()}
+function hud(){
+  const r=run,lv=r.lv,F=+$('#fs').value,W=Math.round(r.Fint),left=Math.max(0,lv.t-r.t);
+  $('#hF').textContent=F;$('#efill').style.width=F/3+'%';$('#efill').classList.toggle('hot',F>250);
+  $('#hS').textContent=r.x.toFixed(1)+' / '+lv.s;$('#hT').textContent=left.toFixed(1);
+  $('#hW').textContent=W+' J'+(r.t>.5?' / '+(W/r.t).toFixed(1)+' W':'')}
+
+/* ============ ผลลัพธ์ + โจทย์คำนวณ ============ */
+const fmt=n=>n.toLocaleString('th-TH');
+function finish(win){
+  const r=run,lv=r.lv;if(!r)return;
+  if(!win){$('#mb').innerHTML=`<h2>💥 กล่องระเบิด!</h2><p>หมดเวลาก่อนถึงเส้นชัย ลองเพิ่มแรงให้มากกว่าแรงเสียดทาน แต่อย่าเกิน 250 N นะ</p><div class="row"><button class="or" id="retry">ลองใหม่</button><button id="lob">ล็อบบี้</button></div>`;
+    $('#modal').classList.add('on');$('#retry').onclick=()=>{$('#modal').classList.remove('on');startLevel(lv)};$('#lob').onclick=()=>{$('#modal').classList.remove('on');go(1)};return}
+  const Favg=Math.max(1,Math.round(r.Fint/lv.s)),W=Favg*lv.s,t=Math.round(r.t*10)/10,idx=LEVELS.filter(l=>l.job===lv.job).indexOf(lv);
+  let q,ans,o;
+  if(lv.job==='work'){ans=W;q=`ออกแรงเฉลี่ย ${Favg} N ทำให้กล่องเคลื่อนที่ ${lv.s} m ได้งานกี่จูล?<br><small>W = F × s</small>`;o=[W,Favg+lv.s,Math.round(Favg/lv.s*10)/10,W*2]}
+  else{ans=Math.round(W/t*10)/10;q=`ทำงาน ${fmt(W)} จูล ใน ${t} วินาที กำลังเฉลี่ยกี่วัตต์?<br><small>P = W ÷ t</small>`;o=[ans,Math.round(W*t),Math.round(W+t),Math.round(ans*2*10)/10]}
+  o=[...new Set(o)];while(o.length<4)o.push(ans+10*o.length);o.sort(()=>Math.random()-.5);
+  const bonus=Math.floor(lv.t-r.t)+(r.over?-5:0),base=Math.max(5,10+bonus);
+  S.cleared[lv.job]=Math.max(S.cleared[lv.job],idx+1);S.work+=W;
+  const score=Math.round((lv.t-r.t)*10);S.best[lv.id]=Math.max(S.best[lv.id]||0,score);
+  $('#mb').innerHTML=`<h2>🎉 ถึงเส้นชัยแล้ว! +${base} 🪙</h2><p>${q}</p><div id="opts">${o.map(v=>`<button class="opt" data-v="${v}">${fmt(v)} ${lv.job==='work'?'J':'W'}</button>`).join('')}</div><div id="fb"></div>`;
+  $('#modal').classList.add('on');S.coins+=base;
+  $('#opts').onclick=e=>{const b=e.target.closest('.opt');if(!b||b.dataset.done)return;const ok=+b.dataset.v===ans;S.total++;
+    document.querySelectorAll('.opt').forEach(x=>{x.dataset.done=1;if(+x.dataset.v===ans)x.classList.add('ok')});
+    if(ok){S.right++;S.streak++;S.coins+=25;sfx.coin()}else{b.classList.add('no');S.streak=0;sfx.oof()}
+    const next=LEVELS[LEVELS.indexOf(lv)+1];
+    $('#fb').innerHTML=`<p>${ok?'✅ ถูกต้อง! +25 🪙':'❌ คำตอบที่ถูกคือ '+fmt(ans)}</p><div class="row"><button class="or" id="nx">${next&&next.job===lv.job?'ด่านต่อไป ▶':'ล็อบบี้'}</button><button class="gr" id="sh">🛒 ร้านค้า</button></div>`;
+    checkBadges();save();
+    $('#nx').onclick=()=>{$('#modal').classList.remove('on');next&&next.job===lv.job?startLevel(next):go(1)};
+    $('#sh').onclick=()=>{$('#modal').classList.remove('on');go(3)}}}
+
+/* ============ ฉาก 3: ร้านค้า + แดชบอร์ด + Badge ============ */
+function toast(t){const e=$('#toast');e.textContent=t;e.style.display='block';setTimeout(()=>e.style.display='none',2600)}
+function checkBadges(){const ok={first:S.cleared.work+S.cleared.power>0,god:S.streak>=5,lift:S.work>=10000,rich:S.coins>=200};
+  BADGES.forEach(b=>{if(ok[b.id]&&!S.badges[b.id]){S.badges[b.id]=1;toast('🏆 ได้รับ Badge: '+b.name);sfx.coin()}})}
+function renderShop(){
+  const st=[['🪙 เหรียญ',S.coins],['🔧 งานสะสม',fmt(Math.round(S.work))+' J'],['✅ ตอบถูก',S.right+'/'+S.total],['🔥 ถูกติดกัน',S.streak],['📦 ด่านที่ผ่าน',(S.cleared.work+S.cleared.power)+'/'+LEVELS.length]];
+  $('#stats').innerHTML=st.map(s=>`<div class="pill"><div class="hv">${s[0]}</div><div class="hn">${s[1]}</div></div>`).join('');
+  $('#shop').innerHTML=SHOP.map(i=>`<div class="item"><span>${i.icon} <b>${i.name}</b><br><small style="font-weight:400">${i.desc}</small></span><button class="${S.own[i.id]?'off gr':'or'}" data-buy="${i.id}">${S.own[i.id]?'มีแล้ว':i.price+' 🪙'}</button></div>`).join('');
+  $('#badges').innerHTML=BADGES.map(b=>`<div class="bdg ${S.badges[b.id]?'on':''}"><span>🏆</span><span><b>${b.name}</b><br><small style="font-weight:400">${b.desc}</small></span></div>`).join('');
+  $('#board').innerHTML='<tr><th>ด่าน</th><th>คะแนนสูงสุด</th></tr>'+LEVELS.map(l=>`<tr><td>${l.name}</td><td>${S.best[l.id]||'-'}</td></tr>`).join('');
+  $('#coins').textContent=S.coins}
+$('#shop').onclick=e=>{const b=e.target.closest('[data-buy]');if(!b)return;const it=SHOP.find(i=>i.id===b.dataset.buy);
+  if(S.coins<it.price){toast('เหรียญไม่พอ! ไปทำภารกิจเพิ่มนะ');sfx.beep();return}
+  S.coins-=it.price;S.own[it.id]=1;sfx.coin();checkBadges();save();renderShop()};
+
+/* ============ ลูปหลัก ============ */
+let last=0;
+function loop(ts){const dt=Math.min(.05,(ts-last)/1000||0);last=ts;AT+=dt;
+  if(cur===2&&run){update(dt);draw();hud()}else if(cur===1)drawAvatar();
+  requestAnimationFrame(loop)}
+save();renderLobby();requestAnimationFrame(loop);
+</script>
+</body>
+</html>
